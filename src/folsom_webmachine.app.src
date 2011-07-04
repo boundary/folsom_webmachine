@@ -1,0 +1,12 @@
+{application, folsom_webmachine,
+ [
+  {description, ""},
+  {vsn, git},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { folsom_webmachine_app, []}},
+  {env, []}
+ ]}.
