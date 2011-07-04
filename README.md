@@ -32,10 +32,9 @@ Query Erlang VM information:
         
          
          $ curl http://localhost:5565/_metrics/test
-
+         
          {"value":{"1303483997384193":{"event":"asdfasdf"}}}
          
          
          $ curl http://localhost:5565/_memory
-
-            {"total":11044608,"processes":3240936,"processes_used":3233888,"system":7803672,"atom":532137,"atom_used":524918,"binary":696984,"code":4358030,"ets":385192}
+         {"total":11044608,"processes":3240936,"processes_used":3233888,"system":7803672,"atom":532137,"atom_used":524918,"binary":696984,"code":4358030,"ets":385192}
