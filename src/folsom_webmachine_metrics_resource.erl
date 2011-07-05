@@ -86,10 +86,9 @@ put_request(undefined, Body) ->
     create_metric(Type, Id);
 put_request(Id, Body) ->
     AtomId = folsom_utils:to_atom(Id),
-    {struct, Value} = proplists:get_value(<<"value">>, Body),
+    Value = proplists:get_value(<<"value">>, Body),
     Info = folsom_metrics:get_metric_info(AtomId),
-    Info1 = proplists:get_value(AtomId, Info),
-    Type = proplists:get_value(type, Info1),
+    Type = proplists:get_value(type, proplists:get_value(AtomId, Info)),
     update_metric(Type, AtomId, Value).
 
 create_metric(counter, Name) ->
@@ -103,9 +102,9 @@ create_metric(history, Name) ->
 create_metric(meter, Name) ->
     folsom_metrics:new_meter(Name).
     
-update_metric(counter, Name, [{<<"inc">>, Value}]) ->
+update_metric(counter, Name, {struct, [{<<"inc">>, Value}]}) ->
     folsom_metrics:notify({Name, {inc, Value}});
-update_metric(counter, Name, [{<<"dec">>, Value}]) ->
+update_metric(counter, Name, {struct, [{<<"dec">>, Value}]}) ->
     folsom_metrics:notify({Name, {dec, Value}});
 update_metric(gauge, Name, Value) ->
     folsom_metrics:notify({Name, Value});
