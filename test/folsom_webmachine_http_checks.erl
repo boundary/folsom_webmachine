@@ -37,7 +37,11 @@ run() ->
     metrics_checks(),
     system_checks(),
     statistics_checks(),
-    memory_checks().
+    memory_checks(),
+    
+    create_metric(),
+    populate_metric(),
+    delete_metric().
 
 metrics_checks() ->
     Body1 = http_helpers:http_get(?BASE_METRICS_URL),
@@ -72,3 +76,30 @@ memory_checks() ->
 
     % verify one of the many keys exist
     true = lists:keymember(<<"total">>, 1, List1).
+
+create_metric() ->
+    Proplist = [
+                {id, "http"},
+                {type, "counter"}
+               ],
+               
+    Body = mochijson2:encode(Proplist),
+    ok = http_helpers:http_put(?BASE_METRICS_URL, Body),
+    
+    Result = http_helpers:http_get(lists:append(io_lib:format("~s~s", [?BASE_METRICS_URL, "/http"]))),
+    {struct, [{<<"value">>, 0}]} = mochijson2:decode(Result).
+    
+populate_metric() ->
+    Proplist = [
+                {value, [{inc, 1}]}
+               ],
+               
+    Body = mochijson2:encode(Proplist),
+    ok = http_helpers:http_put(lists:append(io_lib:format("~s~s", [?BASE_METRICS_URL, "/http"])), Body),
+
+    Result = http_helpers:http_get(lists:append(io_lib:format("~s~s", [?BASE_METRICS_URL, "/http"]))),
+    {struct, [{<<"value">>, 1}]} = mochijson2:decode(Result).
+
+delete_metric() ->
+    Url1 = lists:append(io_lib:format("~s~s", [?BASE_METRICS_URL, "/http"])),
+    ok = http_helpers:http_delete(Url1).

@@ -13,6 +13,18 @@ Query a specific metric:
         
         $ curl http://localhost:5565/_metrics/name
 
+Create a new metric:
+
+        $ curl -X PUT http://localhost:5565/_metrics -d '{"id": "a", "type": "counter"}' -H "Content-Type: application/json"
+        
+Update a metric:
+
+        $ curl -X PUT http://localhost:5565/_metrics/a -d '{"value" : {"inc": 1}}' -H "Content-Type: application/json"
+
+Delete a metric:
+
+        $ curl -X DELETE http://localhost:5565/_metrics/a
+
 Query Erlang VM metrics:
         
         $ curl http://localhost:5565/_memory
