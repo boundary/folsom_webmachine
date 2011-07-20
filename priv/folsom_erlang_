@@ -43,7 +43,16 @@ def main
     
     case METRIC
     when "system"
-      # dont do anything since this is basically static info about the vm
+      puts "#{METRIC}_dist_buf_busy_limit.label dist_buf_busy_limit"
+      puts "#{METRIC}_global_heaps_size.label global_heaps_size"
+      puts "#{METRIC}_logical_processors.label logical_processors"
+      puts "#{METRIC}_logical_processors_online.label logical_processors_online"
+      puts "#{METRIC}_process_count.label process_count"
+      puts "#{METRIC}_process_limit.label process_limit"
+      puts "#{METRIC}_schedulers.label schedulers"
+      puts "#{METRIC}_schedulers_online.label schedulers_online"
+      puts "#{METRIC}_thread_pool_size.label thread_pool_size"
+      puts "#{METRIC}_wordsize.label wordsize"
     when "statistics"
       puts "#{METRIC}_context_switches.type COUNTER"
       puts "#{METRIC}_context_switches.label context_switches"
@@ -80,7 +89,16 @@ def main
     
     case METRIC
     when "system"
-      # dont do anything since this is basically static info about the vm
+      puts "#{METRIC}_dist_buf_busy_limit.value #{metric["dist_buf_busy_limit"]}"
+      puts "#{METRIC}_global_heaps_size.value #{metric["global_heaps_size"]}"
+      puts "#{METRIC}_logical_processors.value #{metric["logical_processors"]}"
+      puts "#{METRIC}_logical_processors_online.value #{metric["logical_processors_online"]}"
+      puts "#{METRIC}_process_count.value #{metric["process_count"]}"
+      puts "#{METRIC}_process_limit.value #{metric["process_limit"]}"
+      puts "#{METRIC}_schedulers.value #{metric["schedulers"]}"
+      puts "#{METRIC}_schedulers_online.value #{metric["schedulers_online"]}"
+      puts "#{METRIC}_thread_pool_size.value #{metric["thread_pool_size"]}"
+      puts "#{METRIC}_wordsize.value #{metric["wordsize"]}"
     when "statistics"
       puts "#{METRIC}_context_switches.value #{metric["context_switches"]}"
       puts "#{METRIC}_run_queue.value #{metric["run_queue"]}"
