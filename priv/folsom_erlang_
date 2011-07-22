@@ -43,7 +43,6 @@ def main
     
     case METRIC
     when "system"
-      puts "#{METRIC}_dist_buf_busy_limit.label dist_buf_busy_limit"
       puts "#{METRIC}_global_heaps_size.label global_heaps_size"
       puts "#{METRIC}_logical_processors.label logical_processors"
       puts "#{METRIC}_logical_processors_online.label logical_processors_online"
@@ -89,7 +88,6 @@ def main
     
     case METRIC
     when "system"
-      puts "#{METRIC}_dist_buf_busy_limit.value #{metric["dist_buf_busy_limit"]}"
       puts "#{METRIC}_global_heaps_size.value #{metric["global_heaps_size"]}"
       puts "#{METRIC}_logical_processors.value #{metric["logical_processors"]}"
       puts "#{METRIC}_logical_processors_online.value #{metric["logical_processors_online"]}"
