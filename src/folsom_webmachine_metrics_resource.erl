@@ -51,14 +51,15 @@ delete_resource(ReqData, Context) ->
     Id = wrq:path_info(id, ReqData),
     folsom_metrics:delete_metric(list_to_atom(Id)),
     {true, ReqData, Context}.
-    
+
 resource_exists(ReqData, Context) ->
     resource_exists(wrq:path_info(id, ReqData), ReqData, Context).
 
 to_json(ReqData, Context) ->
     Id = wrq:path_info(id, ReqData),
     Info = wrq:get_qs_value("info", undefined, ReqData),
-    Result = get_request(Id, Info),
+    CoId = wrq:get_qs_value("metric", undefined, ReqData),
+    Result = get_request(Id, Info, CoId),
     {mochijson2:encode(Result), ReqData, Context}.
 
 from_json(ReqData, Context) ->
@@ -73,13 +74,22 @@ resource_exists(undefined, ReqData, Context) ->
 resource_exists(Id, ReqData, Context) ->
     {folsom_metrics:metric_exists(list_to_atom(Id)), ReqData, Context}.
 
-get_request(undefined, undefined) ->
+get_request(undefined, undefined, undefined) ->
     folsom_metrics:get_metrics();
-get_request(Id, undefined) ->
-    [{value, folsom_metrics:get_metric_value(list_to_atom(Id))}];
-get_request(undefined, "true") ->
+get_request(Id, undefined, undefined) ->
+    AtomId = list_to_atom(Id),
+    case folsom_metrics:get_metric_info(AtomId) of
+        [{_, [{type, histogram}]}] ->
+            folsom_metrics:get_histogram_statistics(AtomId);
+        _ ->
+            [{value, folsom_metrics:get_metric_value(AtomId)}]
+    end;
+get_request(Id, undefined, CoId) ->
+    [{value,
+      folsom_metrics:get_histogram_statistics(list_to_atom(Id), list_to_atom(CoId))}];
+get_request(undefined, "true", undefined) ->
     folsom_metrics:get_metrics_info().
-    
+
 put_request(undefined, Body) ->
     Id = folsom_utils:to_atom(proplists:get_value(<<"id">>, Body)),
     Type = folsom_utils:to_atom(proplists:get_value(<<"type">>, Body)),
@@ -101,7 +111,7 @@ create_metric(history, Name) ->
     folsom_metrics:new_history(Name);
 create_metric(meter, Name) ->
     folsom_metrics:new_meter(Name).
-    
+
 update_metric(counter, Name, {struct, [{<<"inc">>, Value}]}) ->
     folsom_metrics:notify({Name, {inc, Value}});
 update_metric(counter, Name, {struct, [{<<"dec">>, Value}]}) ->
