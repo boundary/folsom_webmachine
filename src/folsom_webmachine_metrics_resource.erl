@@ -36,7 +36,11 @@
 
 -include_lib("webmachine/include/webmachine.hrl").
 
-init(_) -> {ok, undefined}.
+-record(state, {
+          key
+         }).
+
+init(_) -> {ok, #state{key = undefined}}.
 
 content_types_provided(ReqData, Context) ->
     {[{"application/json", to_json}], ReqData, Context}.
@@ -55,8 +59,7 @@ delete_resource(ReqData, Context) ->
 resource_exists(ReqData, Context) ->
     resource_exists(wrq:path_info(id, ReqData), ReqData, Context).
 
-to_json(ReqData, Context) ->
-    Id = wrq:path_info(id, ReqData),
+to_json(ReqData, Context = #state{key = Id}) ->
     Info = wrq:get_qs_value("info", undefined, ReqData),
     CoId = wrq:get_qs_value("metric", undefined, ReqData),
     Result = get_request(Id, Info, CoId),
@@ -64,7 +67,12 @@ to_json(ReqData, Context) ->
 
 from_json(ReqData, Context) ->
     {struct, Body} = mochijson2:decode(wrq:req_body(ReqData)),
-    Result = put_request(wrq:path_info(id, ReqData), Body),
+    Result = case put_request(wrq:path_info(id, ReqData), Body) of
+                 ok ->
+                     ok;
+                 Else ->
+                     list_to_binary(Else)
+             end,
     {mochijson2:encode(Result), ReqData, Context}.
 
 % internal fuctions
@@ -72,17 +80,21 @@ from_json(ReqData, Context) ->
 resource_exists(undefined, ReqData, Context) ->
     {true, ReqData, Context};
 resource_exists(Id, ReqData, Context) ->
-    {folsom_metrics:metric_exists(list_to_atom(Id)), ReqData, Context}.
+    case metric_exists(Id) of
+        {true, Key} ->
+            {true, ReqData, Context#state{key = Key}};
+        {false, _} ->
+            {false, ReqData, Context}
+    end.
 
 get_request(undefined, undefined, undefined) ->
     folsom_metrics:get_metrics();
 get_request(Id, undefined, undefined) ->
-    AtomId = list_to_atom(Id),
-    case folsom_metrics:get_metric_info(AtomId) of
+    case folsom_metrics:get_metric_info(Id) of
         [{_, [{type, histogram}]}] ->
-            folsom_metrics:get_histogram_statistics(AtomId);
+            folsom_metrics:get_histogram_statistics(Id);
         _ ->
-            [{value, folsom_metrics:get_metric_value(AtomId)}]
+            [{value, folsom_metrics:get_metric_value(Id)}]
     end;
 get_request(Id, undefined, CoId) ->
     [{value,
@@ -91,15 +103,15 @@ get_request(undefined, "true", undefined) ->
     folsom_metrics:get_metrics_info().
 
 put_request(undefined, Body) ->
-    Id = folsom_utils:to_atom(proplists:get_value(<<"id">>, Body)),
+    Id = list_to_binary(proplists:get_value(<<"id">>, Body)),
     Type = folsom_utils:to_atom(proplists:get_value(<<"type">>, Body)),
     create_metric(Type, Id);
 put_request(Id, Body) ->
-    AtomId = folsom_utils:to_atom(Id),
+    BinId = list_to_binary(Id),
     Value = proplists:get_value(<<"value">>, Body),
-    Info = folsom_metrics:get_metric_info(AtomId),
-    Type = proplists:get_value(type, proplists:get_value(AtomId, Info)),
-    update_metric(Type, AtomId, Value).
+    Info = folsom_metrics:get_metric_info(BinId),
+    Type = proplists:get_value(type, proplists:get_value(BinId, Info)),
+    update_metric(Type, BinId, Value).
 
 create_metric(counter, Name) ->
     folsom_metrics:new_counter(Name);
@@ -124,3 +136,23 @@ update_metric(history, Name, Value) ->
     folsom_metrics:notify({Name, Value});
 update_metric(meter, Name, Value) ->
     folsom_metrics:notify({Name, Value}).
+
+% @doc Return true if metric with key 'Id' exists, false otherwise
+%
+% Searches for a metric with 'Id' stored as a binary first and falls
+% back to looking for an existing atom if no matching binary key was
+% found.
+metric_exists(Id) when is_list(Id) ->
+    metric_exists(list_to_binary(Id));
+metric_exists(Id) when is_binary(Id) ->
+    case folsom_metrics:metric_exists(Id) of
+        true  -> {true, Id};
+        false ->
+            try
+                metric_exists(erlang:binary_to_existing_atom(Id, utf8))
+            catch
+                error:badarg -> {false, Id}
+            end
+    end;
+metric_exists(Id) when is_atom(Id) ->
+    {folsom_metrics:metric_exists(Id), Id}.

@@ -32,23 +32,34 @@
 
 % http helper functions
 
-check_get_response_code({"200", _, Body}) ->
-    Body.
+check_get_response_code(_, {"200", _, Body}) ->
+    Body;
+check_get_response_code(Url, {RC, Headers, Body}) ->
+    bad_response(get, Url, RC, Headers, Body).
 
-check_put_response_code({"204", _, _}) ->
-    ok.
+check_put_response_code(_, {"204", _, _}) ->
+    ok;
+check_put_response_code(Url, {RC, Headers, Body}) ->
+    bad_response(put, Url, RC, Headers, Body).
 
-check_delete_response_code({"204", _, _}) ->
-    ok.
+check_delete_response_code(_, {"204", _, _}) ->
+    ok;
+check_delete_response_code(Url, {RC, Headers, Body}) ->
+    bad_response(delete, Url, RC, Headers, Body).
 
 http_get(Url) ->
     {ok, RC, ResponseHeaders, ResponseBody} = ibrowse:send_req(Url, [], get),
-    check_get_response_code({RC, ResponseHeaders, ResponseBody}).
+    check_get_response_code(Url, {RC, ResponseHeaders, ResponseBody}).
 
 http_put(Url, RequestBody) ->
     {ok, RC, ResponseHeaders, ResponseBody} = ibrowse:send_req(Url, [?CONTENTTYPE], put, RequestBody),
-    check_put_response_code({RC, ResponseHeaders, ResponseBody}).
+    check_put_response_code(Url, {RC, ResponseHeaders, ResponseBody}).
 
 http_delete(Url) ->
     {ok, RC, ResponseHeaders, ResponseBody} = ibrowse:send_req(Url, [], delete),
-    check_delete_response_code({RC, ResponseHeaders, ResponseBody}).
+    check_delete_response_code(Url, {RC, ResponseHeaders, ResponseBody}).
+
+bad_response(Method, Url, RC, Headers, Body) ->
+    ?debugFmt("Bad Response:", []),
+    ?debugFmt("~p~n~p~n~p~n~p~n~p~n", [Method, Url, RC, Headers, Body]),
+    error.

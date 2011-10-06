@@ -35,10 +35,11 @@
 
 run() ->
     metrics_checks(),
+
     system_checks(),
     statistics_checks(),
     memory_checks(),
-    
+
     create_metric(),
     populate_metric(),
     delete_metric().
@@ -47,11 +48,19 @@ metrics_checks() ->
     Body1 = http_helpers:http_get(?BASE_METRICS_URL),
     List1 = mochijson2:decode(Body1),
     true = lists:member(<<"counter">>, List1),
+    ?debugFmt("http: ~p~n", [List1]),
+
+    ?debugFmt("erlang: ~p~n", [folsom_metrics:get_metrics()]),
 
     Url1 = lists:append(io_lib:format("~s~s~p", [?BASE_METRICS_URL, "/", counter])),
     Body2 = http_helpers:http_get(Url1),
     {struct, List2} = mochijson2:decode(Body2),
-    0 = proplists:get_value(<<"value">>, List2).
+    0 = proplists:get_value(<<"value">>, List2),
+
+    Url2 = lists:append(io_lib:format("~s~s~p", [?BASE_METRICS_URL, "/", gauge])),
+    Body3 = http_helpers:http_get(Url2),
+    {struct, List3} = mochijson2:decode(Body3),
+    2 = proplists:get_value(<<"value">>, List3).
 
 system_checks() ->
     % check _system stats
@@ -82,18 +91,20 @@ create_metric() ->
                 {id, "http"},
                 {type, "counter"}
                ],
-               
+
     Body = mochijson2:encode(Proplist),
     ok = http_helpers:http_put(?BASE_METRICS_URL, Body),
-    
+
+    ?debugFmt("erlang: ~p~n", [folsom_metrics:get_metrics()]),
+
     Result = http_helpers:http_get(lists:append(io_lib:format("~s~s", [?BASE_METRICS_URL, "/http"]))),
     {struct, [{<<"value">>, 0}]} = mochijson2:decode(Result).
-    
+
 populate_metric() ->
     Proplist = [
                 {value, [{inc, 1}]}
                ],
-               
+
     Body = mochijson2:encode(Proplist),
     ok = http_helpers:http_put(lists:append(io_lib:format("~s~s", [?BASE_METRICS_URL, "/http"])), Body),
 
