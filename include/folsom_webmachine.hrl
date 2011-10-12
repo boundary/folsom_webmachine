@@ -3,5 +3,6 @@
                   {["_statistics"],folsom_webmachine_statistics_resource,[]},
                   {["_process"],folsom_webmachine_process_resource,[]},
                   {["_socket"],folsom_webmachine_socket_resource,[]},
+                  {["_ping"],folsom_webmachine_ping_resource,[]},
                   {["_metrics"],folsom_webmachine_metrics_resource,[]},
                   {["_metrics",id],folsom_webmachine_metrics_resource,[]}]).
