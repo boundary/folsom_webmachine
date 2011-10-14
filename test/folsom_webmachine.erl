@@ -30,6 +30,7 @@ run_test() ->
 
     application:unset_env(webmachine, dispatch_list),
     folsom_webmachine_sup:start_link(),
+    folsom:start(),
 
     folsom_erlang_checks:create_metrics(),
 
