@@ -7,5 +7,5 @@
                   kernel,
                   stdlib
                  ]},
-  {env, []}
+  {env, [{health, {erlang, node, []}}]}
  ]}.

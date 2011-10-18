@@ -4,5 +4,6 @@
                   {["_process"],folsom_webmachine_process_resource,[]},
                   {["_port"],folsom_webmachine_port_resource,[]},
                   {["_ping"],folsom_webmachine_ping_resource,[]},
+                  {["_health"], folsom_webmachine_health_resource, []},
                   {["_metrics"],folsom_webmachine_metrics_resource,[]},
                   {["_metrics",id],folsom_webmachine_metrics_resource,[]}]).
