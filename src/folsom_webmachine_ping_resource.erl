@@ -38,4 +38,4 @@ allowed_methods(ReqData, Context) ->
     {['GET'], ReqData, Context}.
 
 to_json(ReqData, Context) ->
-    {mochijson2:encode([{"ping", ok}]), ReqData, Context}.
+    {mochijson2:encode([{"pong", ok}]), ReqData, Context}.
