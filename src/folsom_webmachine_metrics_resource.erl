@@ -92,7 +92,7 @@ get_request(undefined, undefined, undefined) ->
 get_request(Id, undefined, undefined) ->
     case folsom_metrics:get_metric_info(Id) of
         [{_, [{type, histogram}]}] ->
-            folsom_metrics:get_histogram_statistics(Id);
+            [{value, folsom_metrics:get_histogram_statistics(Id)}];
         _ ->
             [{value, folsom_metrics:get_metric_value(Id)}]
     end;
