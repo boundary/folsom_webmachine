@@ -75,6 +75,9 @@ init([]) ->
                  {dispatch, ?DISPATCH}
                 ],
 
+    % create folsom ets tables
+    folsom:start(),
+
     Web = {webmachine_mochiweb,
            {webmachine_mochiweb, start, [WebConfig]},
            permanent,
