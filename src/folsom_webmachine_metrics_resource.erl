@@ -53,7 +53,7 @@ allowed_methods(ReqData, Context) ->
 
 delete_resource(ReqData, Context) ->
     Id = wrq:path_info(id, ReqData),
-    folsom_metrics:delete_metric(list_to_atom(Id)),
+    folsom_metrics:delete_metric(list_to_binary(Id)),
     {true, ReqData, Context}.
 
 resource_exists(ReqData, Context) ->
