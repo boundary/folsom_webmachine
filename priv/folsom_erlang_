@@ -19,8 +19,8 @@
 #
 # This is a munin plugin for the folsom _statistics and _memory resources.
 #
-# _system resource tracking is disabled since it is mostly static data about the 
-# vm itself and not running statistics. If it proves useful to have it in munin 
+# _system resource tracking is disabled since it is mostly static data about the
+# vm itself and not running statistics. If it proves useful to have it in munin
 # in the future it shouldn't be hard to had the appropriate stats to this plugin.
 #
 
@@ -35,19 +35,18 @@ METRIC = $1
 
 def main
   metric = JSON.parse(RestClient.get("#{BASE_URL}/_#{METRIC}"))
-  
+
   if ARGV[0] == "config"
     puts 'graph_category Folsom'
     puts "graph_title Erlang #{METRIC}"
     puts 'graph_vlabel value'
-    
+
     case METRIC
     when "system"
       puts "#{METRIC}_global_heaps_size.label global_heaps_size"
       puts "#{METRIC}_logical_processors.label logical_processors"
       puts "#{METRIC}_logical_processors_online.label logical_processors_online"
       puts "#{METRIC}_process_count.label process_count"
-      puts "#{METRIC}_process_limit.label process_limit"
       puts "#{METRIC}_schedulers.label schedulers"
       puts "#{METRIC}_schedulers_online.label schedulers_online"
       puts "#{METRIC}_thread_pool_size.label thread_pool_size"
@@ -56,28 +55,24 @@ def main
       puts "#{METRIC}_context_switches.type COUNTER"
       puts "#{METRIC}_context_switches.label context_switches"
       puts "#{METRIC}_run_queue.label run_queue"
-      
+
       metric["garbage_collection"].keys.each do |key|
         puts "#{METRIC}_#{key}.type COUNTER"
         puts "#{METRIC}_#{key}.label #{key}"
       end
-      
+
       metric["io"].keys.each do |key|
         puts "#{METRIC}_#{key}.type COUNTER"
         puts "#{METRIC}_#{key}.label #{key}"
       end
-      
+
       metric["reductions"].keys.each do |key|
         puts "#{METRIC}_#{key}.type COUNTER"
         puts "#{METRIC}_#{key}.label #{key}"
       end
-      
-      metric["runtime"].keys.each do |key|
-        puts "#{METRIC}_#{key}.label #{key}"
-      end
-      
+
       puts "#{METRIC}_wall_clock_time_since_last_call.label wall_clock_time_since_last_call"
-      
+
     when "memory"
       metric.keys.each do |key|
         puts "#{METRIC}_#{key}.label #{key}"
@@ -85,14 +80,13 @@ def main
     end
 
   else
-    
+
     case METRIC
     when "system"
       puts "#{METRIC}_global_heaps_size.value #{metric["global_heaps_size"]}"
       puts "#{METRIC}_logical_processors.value #{metric["logical_processors"]}"
       puts "#{METRIC}_logical_processors_online.value #{metric["logical_processors_online"]}"
       puts "#{METRIC}_process_count.value #{metric["process_count"]}"
-      puts "#{METRIC}_process_limit.value #{metric["process_limit"]}"
       puts "#{METRIC}_schedulers.value #{metric["schedulers"]}"
       puts "#{METRIC}_schedulers_online.value #{metric["schedulers_online"]}"
       puts "#{METRIC}_thread_pool_size.value #{metric["thread_pool_size"]}"
@@ -100,32 +94,28 @@ def main
     when "statistics"
       puts "#{METRIC}_context_switches.value #{metric["context_switches"]}"
       puts "#{METRIC}_run_queue.value #{metric["run_queue"]}"
-      
+
       metric["garbage_collection"].each do |key, value|
         puts "#{METRIC}_#{key}.value #{value}"
       end
-      
+
       metric["io"].each do |key, value|
         puts "#{METRIC}_#{key}.value #{value}"
       end
-      
+
       metric["reductions"].each do |key, value|
         puts "#{METRIC}_#{key}.value #{value}"
       end
-      
-      metric["runtime"].each do |key, value|
-        puts "#{METRIC}_#{key}.value #{value}"
-      end
-    
-      puts "#{METRIC}_wall_clock_time_since_last_call.value #{metric["wall_clock"]["wall_clock_time_since_last_call"]}"  
+
+      puts "#{METRIC}_wall_clock_time_since_last_call.value #{metric["wall_clock"]["wall_clock_time_since_last_call"]}"
     when "memory"
       metric.each do |key, value|
         puts "#{METRIC}_#{key}.value #{value}"
       end
     end
-    
+
   end
-  
+
 end
 
 main
