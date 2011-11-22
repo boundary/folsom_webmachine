@@ -75,9 +75,6 @@ init([]) ->
                  {dispatch, ?DISPATCH}
                 ],
 
-    % create folsom ets tables
-    folsom:start(),
-
     Web = {webmachine_mochiweb,
            {webmachine_mochiweb, start, [WebConfig]},
            permanent,
@@ -85,5 +82,13 @@ init([]) ->
            worker,
            dynamic},
 
-    Processes = [Web],
+    Folsom = {folsom,
+              {folsom_sup, start_link, []},
+              permanent,
+              5000,
+              supervisor,
+              [folsom_sup]
+             },
+
+    Processes = [Web, Folsom],
     {ok, { {one_for_one, 10, 10}, Processes} }.
