@@ -28,7 +28,13 @@ require 'rubygems'
 require 'rest_client'
 require 'json'
 
-BASE_URL = "http://localhost:5565"
+DEFAULT_PORT = "5565"
+
+if ENV['port']
+  BASE_URL = "http://localhost:#{ENV['port']}"
+else
+  BASE_URL = "http://localhost:#{DEFAULT_PORT}"
+end
 
 __FILE__[/folsom_erlang_(.*)/]
 METRIC = $1

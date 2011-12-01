@@ -24,7 +24,13 @@ require 'rubygems'
 require 'rest_client'
 require 'json'
 
-BASE_URL = "http://localhost:5565/_metrics"
+DEFAULT_PORT = "5565"
+
+if ENV['port']
+  BASE_URL = "http://localhost:#{ENV['port']}/_metrics"
+else
+  BASE_URL = "http://localhost:#{DEFAULT_PORT}/_metrics"
+end
 
 __FILE__[/folsom_(.*)/]
 METRIC = $1
