@@ -39,9 +39,11 @@ end
 if ENV['multiapp'] == "true"
   __FILE__[/folsom_erlang_(.*)_(.*)/]
   METRIC = $2
+  NAME = "#{$2} - #{$1}"
 else
   __FILE__[/folsom_erlang_(.*)/]
   METRIC = $1
+  NAME = $1
 end
 
 def main
@@ -49,7 +51,7 @@ def main
 
   if ARGV[0] == "config"
     puts 'graph_category Folsom'
-    puts "graph_title Erlang #{METRIC}"
+    puts "graph_title Erlang #{NAME}"
     puts 'graph_vlabel value'
 
     case METRIC
