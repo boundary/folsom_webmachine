@@ -74,7 +74,7 @@ def main
       puts "#{METRIC}.label seconds_since_last_event"
     when "meter"
       metric["value"].keys.each do |m|
-        unless m == "acceleration"
+        unless m == "acceleration" || m == "count"
           puts "#{METRIC}_#{m}.label #{m}"
         end
       end
@@ -107,7 +107,7 @@ def main
       end
     when "meter"
       metric["value"].each do |key, value|
-        unless key == "acceleration"
+        unless key == "acceleration" || m == "count"
           puts "#{METRIC}_#{key}.value #{value}"
         end
       end
