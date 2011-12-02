@@ -36,8 +36,13 @@ else
   BASE_URL = "http://localhost:#{DEFAULT_PORT}"
 end
 
-__FILE__[/folsom_erlang_(.*)/]
-METRIC = $1
+if ENV['multiapp'] == "true"
+  __FILE__[/folsom_erlang_(.*)_(.*)/]
+  METRIC = $2
+else
+  __FILE__[/folsom_erlang_(.*)/]
+  METRIC = $1
+end
 
 def main
   metric = JSON.parse(RestClient.get("#{BASE_URL}/_#{METRIC}"))
