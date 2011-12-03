@@ -107,7 +107,7 @@ def main
       end
     when "meter"
       metric["value"].each do |key, value|
-        unless key == "acceleration" || m == "count"
+        unless key == "acceleration" || key == "count"
           puts "#{METRIC}_#{key}.value #{value}"
         end
       end
