@@ -55,7 +55,7 @@ def main
       puts "#{METRIC}.label value"
     when "histogram"
       metric["value"].keys.each do |m|
-        unless m == "percentile" || m == "histogram"
+        unless m == "percentile" || m == "histogram" || m == "variance"
           puts "#{METRIC}_#{m}.label #{m}"
         end
       end
@@ -65,11 +65,11 @@ def main
         puts "#{METRIC}_#{p}ptile.label #{p}th percentile"
       end
 
-      sorted_hist_keys = metric["value"]["histogram"].keys.sort_by {|key| key.to_i}
-      sorted_hist_keys.each do |h|
-        puts "#{METRIC}_#{h}hist.type COUNTER"
-        puts "#{METRIC}_#{h}hist.label histogram - #{h} bucket"
-      end
+      #sorted_hist_keys = metric["value"]["histogram"].keys.sort_by {|key| key.to_i}
+      #sorted_hist_keys.each do |h|
+      #  puts "#{METRIC}_#{h}hist.type COUNTER"
+      #  puts "#{METRIC}_#{h}hist.label histogram - #{h} bucket"
+      #end
     when "history"
       puts "#{METRIC}.label seconds_since_last_event"
     when "meter"
@@ -93,7 +93,7 @@ def main
       puts "#{METRIC}.value #{value}"
     when "histogram"
       metric["value"].each do |key, value|
-        unless key == "percentile" || key == "histogram"
+        unless key == "percentile" || key == "histogram" || key == "variance"
           puts "#{METRIC}_#{key}.value #{value}"
         end
       end
@@ -102,9 +102,9 @@ def main
         puts "#{METRIC}_#{key}ptile.value #{value}"
       end
 
-      metric["value"]["histogram"].each do |key, value|
-        puts "#{METRIC}_#{key}hist.value #{value}"
-      end
+      #metric["value"]["histogram"].each do |key, value|
+      #  puts "#{METRIC}_#{key}hist.value #{value}"
+      #end
     when "meter"
       metric["value"].each do |key, value|
         unless key == "acceleration" || key == "count"
