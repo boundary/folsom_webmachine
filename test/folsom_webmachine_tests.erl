@@ -36,6 +36,6 @@ run_test() ->
     folsom_erlang_checks:populate_metrics(),
 
     ibrowse:start(),
-    folsom_webmachine_http_checks:run(),
+    folsom_http_checks:run(),
     ibrowse:stop().
 
