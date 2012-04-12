@@ -19,6 +19,9 @@
 %%% File:      folsom_http_checks.erl
 %%% @author    joe williams <j@boundary.com>
 %%% @doc
+%%% this is a generic module for testing folsom's http endpoint wrappers
+%%% the tests here should pass in folsom_webmachine, folsom_cowboy and
+%%% any other http wrapper for folsom
 %%% @end
 %%%------------------------------------------------------------------
 
