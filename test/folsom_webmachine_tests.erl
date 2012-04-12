@@ -22,7 +22,7 @@
 %%% @end
 %%%------------------------------------------------------------------
 
--module(folsom_webmachine).
+-module(folsom_webmachine_tests).
 
 -include_lib("eunit/include/eunit.hrl").
 

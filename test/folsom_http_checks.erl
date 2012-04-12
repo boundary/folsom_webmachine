@@ -16,13 +16,13 @@
 
 
 %%%-------------------------------------------------------------------
-%%% File:      folsom_webmachine_http_checks.erl
+%%% File:      folsom_http_checks.erl
 %%% @author    joe williams <j@boundary.com>
 %%% @doc
 %%% @end
 %%%------------------------------------------------------------------
 
--module(folsom_webmachine_http_checks).
+-module(folsom_http_checks).
 
 -include_lib("eunit/include/eunit.hrl").
 
@@ -32,6 +32,10 @@
 -define(STATISTICS_URL, "http://localhost:5565/_statistics").
 -define(MEMORY_URL, "http://localhost:5565/_memory").
 -define(BASE_METRICS_URL, "http://localhost:5565/_metrics").
+-define(HEALTH_URL, "http://localhost:5565/_health").
+-define(PING_URL, "http://localhost:5565/_ping").
+-define(PORT_URL, "http://localhost:5565/_port").
+-define(PROCESS_URL, "http://localhost:5565/_process").
 
 run() ->
     metrics_checks(),
@@ -39,6 +43,10 @@ run() ->
     system_checks(),
     statistics_checks(),
     memory_checks(),
+    ping_checks(),
+    health_checks(),
+    port_checks(),
+    process_checks(),
 
     create_metric(),
     populate_metric(),
@@ -86,6 +94,38 @@ memory_checks() ->
     % verify one of the many keys exist
     true = lists:keymember(<<"total">>, 1, List1).
 
+ping_checks() ->
+    % make sure ping works
+    Body1 = http_helpers:http_get(?PING_URL),
+    {struct, List1} = mochijson2:decode(Body1),
+
+    % verify one of the many keys exist
+    true = lists:keymember(<<"pong">>, 1, List1).
+
+health_checks() ->
+    % make sure ping works
+    Body1 = http_helpers:http_get(?HEALTH_URL),
+    {struct, List1} = mochijson2:decode(Body1),
+
+    % verify one of the many keys exist
+    true = lists:keymember(<<"health">>, 1, List1).
+
+process_checks() ->
+    % make sure process works
+    Body1 = http_helpers:http_get(?PROCESS_URL),
+    {struct, List1} = mochijson2:decode(Body1),
+
+    % verify one of the many keys exist
+    true = lists:keymember(<<"<0.0.0>">>, 1, List1).
+
+port_checks() ->
+    % make sure process works
+    Body1 = http_helpers:http_get(?PORT_URL),
+    {struct, List1} = mochijson2:decode(Body1),
+
+    % verify one of the many keys exist
+    true = lists:keymember(<<"#Port<0.1>">>, 1, List1).
+
 create_metric() ->
     Proplist = [
                 {id, "http"},
@@ -114,3 +154,4 @@ populate_metric() ->
 delete_metric() ->
     Url1 = lists:append(io_lib:format("~s~s", [?BASE_METRICS_URL, "/http"])),
     ok = http_helpers:http_delete(Url1).
+
