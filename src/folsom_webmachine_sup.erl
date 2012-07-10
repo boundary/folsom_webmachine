@@ -18,11 +18,9 @@
 %%%-------------------------------------------------------------------
 %%% File:      folsom_webmachine_sup.erl
 %%% @author    joe williams <j@boundary.com>
-%%% @doc
+%%% @doc Supervisor for the folsom application.
 %%% @end
 %%%------------------------------------------------------------------
-
-%% @doc Supervisor for the folsom application.
 
 -module(folsom_webmachine_sup).
 
