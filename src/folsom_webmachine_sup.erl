@@ -80,13 +80,4 @@ init([]) ->
            worker,
            dynamic},
 
-    Folsom = {folsom,
-              {folsom_sup, start_link, []},
-              permanent,
-              5000,
-              supervisor,
-              [folsom_sup]
-             },
-
-    Processes = [Web, Folsom],
-    {ok, { {one_for_one, 10, 10}, Processes} }.
+    {ok, { {one_for_one, 10, 10}, [Web]} }.

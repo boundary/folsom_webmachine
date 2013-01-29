@@ -3,9 +3,11 @@
   {description, ""},
   {vsn, git},
   {registered, []},
+  {mod, {folsom_webmachine_app, []}},
   {applications, [
                   kernel,
-                  stdlib
+                  stdlib,
+                  folsom
                  ]},
   {env, [{health, {erlang, node, []}}]}
  ]}.
