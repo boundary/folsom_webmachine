@@ -103,7 +103,12 @@ get_request(undefined, "true", undefined) ->
     folsom_metrics:get_metrics_info().
 
 put_request(undefined, Body) ->
-    Id = list_to_binary(proplists:get_value(<<"id">>, Body)),
+    Id = case proplists:get_value(<<"id">>, Body) of
+        Id1 when is_list(Id1) ->
+            list_to_binary(Id1);
+        Id1 ->
+            Id1
+    end,
     Type = folsom_utils:to_atom(proplists:get_value(<<"type">>, Body)),
     create_metric(Type, Id);
 put_request(Id, Body) ->

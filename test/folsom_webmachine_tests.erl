@@ -30,6 +30,7 @@ run_test() ->
 
     application:unset_env(webmachine, dispatch_list),
     folsom_webmachine_sup:start_link(),
+    application:start(folsom),
 
     folsom_erlang_checks:create_metrics(),
 
@@ -37,5 +38,7 @@ run_test() ->
 
     ibrowse:start(),
     folsom_http_checks:run(),
-    ibrowse:stop().
+    ibrowse:stop(),
+
+    application:stop(folsom).
 
